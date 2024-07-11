@@ -5,6 +5,7 @@ public class JobCardManager : MonoBehaviour
 {
     public GameObject jobCardPrefab;
     public Transform jobCardContainer;
+    public PopUpManager popUpManager; // Add this line to reference the PopUpManager
 
     private void OnEnable()
     {
@@ -23,13 +24,16 @@ public class JobCardManager : MonoBehaviour
         if (jobCardPrefab == null)
         {
             Debug.LogError("JobCardPrefab is not assigned in the Inspector.");
-            return;
         }
 
         if (jobCardContainer == null)
         {
             Debug.LogError("JobCardContainer is not assigned in the Inspector.");
-            return;
+        }
+
+        if (popUpManager == null)
+        {
+            Debug.LogError("PopUpManager is not assigned in the Inspector.");
         }
 
         LoadJobCards();
@@ -37,7 +41,6 @@ public class JobCardManager : MonoBehaviour
 
     void LoadJobCards()
     {
-        // Example job data - replace with your actual job data source
         string[] jobTitles = { "Software Engineer", "Product Manager", "Data Analyst" };
         string[] companies = { "Company A", "Company B", "Company C" };
         string[] locations = { "Location A", "Location B", "Location C" };
@@ -45,37 +48,17 @@ public class JobCardManager : MonoBehaviour
 
         for (int i = 0; i < jobTitles.Length; i++)
         {
-            Debug.Log("Instantiating job card for: " + jobTitles[i]);
             GameObject jobCard = Instantiate(jobCardPrefab, jobCardContainer);
-            if (jobCard == null)
-            {
-                Debug.LogError("Failed to instantiate job card.");
-                continue;
-            }
-            Debug.Log("Job card instantiated");
 
-            Transform jobTitleTransform = jobCard.transform.Find("JobTitle");
-            Transform companyTransform = jobCard.transform.Find("Company");
-            Transform locationTransform = jobCard.transform.Find("Location");
-            Transform descriptionTransform = jobCard.transform.Find("Description");
-
-            if (jobTitleTransform == null || companyTransform == null || locationTransform == null || descriptionTransform == null)
-            {
-                Debug.LogError("One or more text components are missing in the job card prefab.");
-                continue;
-            }
-
-            Text jobTitleText = jobTitleTransform.GetComponent<Text>();
-            Text companyText = companyTransform.GetComponent<Text>();
-            Text locationText = locationTransform.GetComponent<Text>();
-            Text descriptionText = descriptionTransform.GetComponent<Text>();
+            Text jobTitleText = jobCard.transform.Find("JobTitle")?.GetComponent<Text>();
+            Text companyText = jobCard.transform.Find("Company")?.GetComponent<Text>();
+            Text locationText = jobCard.transform.Find("Location")?.GetComponent<Text>();
+            Text descriptionText = jobCard.transform.Find("Description")?.GetComponent<Text>();
 
             if (jobTitleText != null) jobTitleText.text = jobTitles[i];
             if (companyText != null) companyText.text = companies[i];
             if (locationText != null) locationText.text = locations[i];
             if (descriptionText != null) descriptionText.text = descriptions[i];
-
-            Debug.Log("Job card details set for: " + jobTitles[i]);
         }
     }
 
@@ -88,6 +71,6 @@ public class JobCardManager : MonoBehaviour
     void OnSwipeRight()
     {
         Debug.Log("Swiped right - Job suitable, trigger mini-games");
-        // Implement logic for right swipe (suitable), e.g., trigger a pop-up for mini-games
+        popUpManager.ShowPopUp(); // Trigger the pop-up when swiping right
     }
 }
